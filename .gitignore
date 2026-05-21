@@ -1,0 +1,15 @@
+node_modules/
+.env
+dist/
+coverage/
+
+# Local SQLite (never commit workspace DB)
+*.db
+
+# Publish only root README; other Markdown stays local (not pushed)
+*.md
+!README.md
+
+# Local scratch scripts (omit from remote)
+test-llm.js
+tewstr.py

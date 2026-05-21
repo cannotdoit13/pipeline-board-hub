@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pipeline Board Hub - Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #3b82f6;
+        --primary-dark: #1e40af;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #0ea5e9;
+        --light: #f9fafb;
+        --border: #e5e7eb;
+        --text: #1f2937;
+        --text-secondary: #6b7280;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: var(--light);
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      body.dark-mode {
+        --light: #1f2937;
+        --border: #374151;
+        --text: #f9fafb;
+        --text-secondary: #d1d5db;
+        background: #111827;
+      }
+
+      header {
+        background: white;
+        border-bottom: 1px solid var(--border);
+        padding: 20px 0;
+        box-shadow: var(--shadow);
+        margin-bottom: 32px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      body.dark-mode header {
+        background: #1f2937;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 28px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      h1::before {
+        content: "⚙️";
+        font-size: 32px;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        padding: 8px;
+        border-radius: 6px;
+        transition: background 0.2s;
+      }
+
+      .theme-toggle:hover {
+        background: var(--border);
+      }
+
+      h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      button, select, input, textarea {
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: white;
+        color: var(--text);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      body.dark-mode button,
+      body.dark-mode select,
+      body.dark-mode input,
+      body.dark-mode textarea {
+        background: #374151;
+        border-color: #4b5563;
+        color: white;
+      }
+
+      button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        font-weight: 500;
+      }
+
+      button:hover {
+        background: var(--primary-dark);
+      }
+
+      button.secondary {
+        background: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      button.secondary:hover {
+        background: var(--light);
+      }
+
+      button.danger {
+        background: var(--danger);
+      }
+
+      button.danger:hover {
+        background: #dc2626;
+      }
+
+      button.success {
+        background: var(--success);
+      }
+
+      button.success:hover {
+        background: #059669;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      @media (max-width: 1024px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .stats-panel {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      @media (max-width: 768px) {
+        .stats-panel {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        text-align: center;
+      }
+
+      body.dark-mode .stat-card {
+        background: #1f2937;
+      }
+
+      .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 8px 0;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      .card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      body.dark-mode .card {
+        background: #1f2937;
+        border-color: #374151;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 16px;
+        background: var(--light);
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+
+      .controls input,
+      .controls select,
+      .controls button {
+        flex-grow: 1;
+        min-width: 160px;
+      }
+
+      body.dark-mode .controls {
+        background: #111827;
+        border-color: #374151;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+
+      th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--light);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+
+      body.dark-mode th {
+        background: #111827;
+      }
+
+      tr:hover {
+        background: var(--light);
+      }
+
+      body.dark-mode tr:hover {
+        background: #374151;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge.success {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .badge.danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .badge.warning {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .badge.info {
+        background: #cffafe;
+        color: #164e63;
+      }
+
+      body.dark-mode .badge.success {
+        background: #064e3b;
+        color: #86efac;
+      }
+
+      body.dark-mode .badge.danger {
+        background: #7f1d1d;
+        color: #fca5a5;
+      }
+
+      body.dark-mode .badge.warning {
+        background: #78350f;
+        color: #fcd34d;
+      }
+
+      body.dark-mode .badge.info {
+        background: #164e63;
+        color: #06b6d4;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
+      }
+
+      .empty-state p {
+        margin-top: 8px;
+      }
+
+      pre {
+        background: var(--light);
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 12px;
+        line-height: 1.4;
+        max-height: 400px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .action-buttons button {
+        flex: 0 1 auto;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .run-summary {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: var(--light);
+        border-radius: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      body.dark-mode .run-summary {
+        background: #111827;
+        border: 1px solid #374151;
+      }
+
+      .run-summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .run-summary-label {
+        font-size: 11px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      .run-summary-value {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .divider {
+        width: 1px;
+        height: 30px;
+        background: var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container">
+        <h1>Pipeline Board Hub</h1>
+        <div class="header-actions">
+          <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Stats Panel -->
+      <div class="stats-panel">
+        <div class="stat-card">
+          <div class="stat-label">Total Runs</div>
+          <div class="stat-number" id="statTotalRuns">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Failed</div>
+          <div class="stat-number" style="color: var(--danger);" id="statFailedRuns">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-number" style="color: var(--success);" id="statSuccessRate">0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Open Items</div>
+          <div class="stat-number" style="color: var(--info);" id="statOpenItems">0</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Pipeline Runs Section -->
+        <div class="card">
+          <div class="section-title">
+            <h2>📊 Pipeline Runs</h2>
+          </div>
+
+          <div class="controls">
+            <input id="repoInput" placeholder="owner/repo" value="NousResearch/hermes-agent" />
+            <button id="refreshLive">Refresh Live</button>
+            <button id="refresh" class="secondary">Generate Mock</button>
+            <select id="provider">
+              <option value="">All Providers</option>
+              <option value="mock">Mock</option>
+              <option value="github-actions">GitHub Actions</option>
+              <option value="azure-pipelines">Azure Pipelines</option>
+            </select>
+            <select id="statusFilter">
+              <option value="">All Status</option>
+              <option value="failed">Failed</option>
+              <option value="success">Success</option>
+              <option value="running">Running</option>
+            </select>
+          </div>
+
+          <div id="runsEmpty" class="empty-state" style="display: none;">
+            <p>📭 No pipeline runs found</p>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Repo</th>
+                <th>Branch</th>
+                <th>Actor</th>
+                <th>Started</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <!-- Board Items Section -->
+        <div class="card">
+          <div class="section-title">
+            <h2>📋 Work Items</h2>
+          </div>
+
+          <div class="controls">
+            <input id="itemRepoFilter" placeholder="repo filter e.g. owner/repo" />
+            <input id="itemAssigneeFilter" placeholder="assignee id" />
+            <select id="itemStatusFilter">
+              <option value="">All Status</option>
+              <option value="todo">Todo</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+            <select id="itemSeverityFilter">
+              <option value="">All Severity</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <div id="itemsEmpty" class="empty-state" style="display: none;">
+            <p>📭 No work items found</p>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Severity</th>
+                <th>Assignee</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="itemRows"></tbody>
+          </table>
+
+          <div class="action-buttons" style="margin-top: 16px;">
+            <button id="loadItems" class="secondary">Refresh Items</button>
+            <button id="deleteMockItems" class="danger">Delete Mock</button>
+            <button id="deleteCompletedItems" class="danger">Delete Completed</button>
+            <button id="failedToItem" class="success">Create from Failed</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scheduler Section -->
+      <div class="card">
+        <div class="section-title">
+          <h2>⏱️ Scheduler Status</h2>
+        </div>
+
+        <div class="action-buttons">
+          <button id="schedulerStatus" class="secondary">Refresh Status</button>
+          <button id="pollActive" class="success">Poll Active Repos</button>
+          <button id="pollLow">Poll Low Activity</button>
+          <button id="reconcile">Run Reconciliation</button>
+        </div>
+
+        <pre id="schedulerOutput" style="margin-top: 16px;"></pre>
+      </div>
+
+      <!-- AI Recommendations Section -->
+      <div class="card">
+        <div class="section-title">
+          <h2>🤖 AI Recommendations</h2>
+        </div>
+
+        <p style="color: var(--text-secondary); margin-bottom: 16px;">
+          Click "AI plan" on a failed run or work item for context-aware recommendations.
+        </p>
+
+        <div style="margin-bottom: 16px;">
+          <textarea id="requirement" rows="3" placeholder="Or describe a requirement here for generic AI planning..."></textarea>
+        </div>
+
+        <div class="action-buttons">
+          <button id="recommend" class="success">Generate Recommendation</button>
+          <button id="pending" class="secondary">Load Pending</button>
+        </div>
+
+        <pre id="recommendationOutput" style="margin-top: 16px;"></pre>
+      </div>
+
+      <!-- Status/Messages -->
+      <pre id="status" style="display: none;"></pre>
+    </div>
+
+    <script>
+      // Utility functions first
+      function showStatus(msg) {
+        const statusEl = document.getElementById("status");
+        statusEl.textContent = msg;
+        statusEl.style.display = "block";
+      }
+
+      async function deleteItem(itemId) {
+        if (!confirm("Delete this work item?")) return;
+        try {
+          const res = await fetch(`/api/board/items/${itemId}`, { method: "DELETE" });
+          const data = await res.json();
+          showStatus(JSON.stringify(data, null, 2));
+          await loadItems();
+        } catch (error) {
+          showStatus("Error: " + error.message);
+        }
+      }
+
+      async function recommendFromRun(runId) {
+        try {
+          const res = await fetch("/api/ai/recommendations/from-failed-run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ runId }),
+          });
+          const data = await res.json();
+          document.getElementById("recommendationOutput").textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          document.getElementById("recommendationOutput").textContent = "Error: " + error.message;
+        }
+      }
+
+      async function bulkDelete(mode) {
+        if (!confirm(`Delete ${mode} work items?`)) return;
+        try {
+          const res = await fetch(`/api/board/items?mode=${mode}`, { method: "DELETE" });
+          const data = await res.json();
+          showStatus(JSON.stringify(data, null, 2));
+          await loadItems();
+        } catch (error) {
+          showStatus("Error: " + error.message);
+        }
+      }
+
+      // Dark mode toggle
+      const themeToggle = document.getElementById('themeToggle');
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+      }
+
+      themeToggle.onclick = () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+      };
+
+      // Load and display runs
+      async function loadRuns() {
+        const provider = document.getElementById("provider").value;
+        const statusFilter = document.getElementById("statusFilter").value;
+        const query = new URLSearchParams();
+        if (provider) query.set("provider", provider);
+        if (statusFilter) query.set("status", statusFilter);
+
+        console.log("Loading runs with filters:", { provider, statusFilter });
+
+        try {
+          const url = "/api/pipelines/runs?" + query.toString();
+          console.log("Fetching from:", url);
+          const res = await fetch(url);
+          const data = await res.json();
+          console.log("Got runs:", data);
+          const rows = document.getElementById("rows");
+          rows.innerHTML = "";
+
+          if (!data.runs || !data.runs.length) {
+            document.getElementById("runsEmpty").style.display = "block";
+            console.log("No runs found");
+            return;
+          }
+          document.getElementById("runsEmpty").style.display = "none";
+
+          // Update stats
+          updateStats(data.runs);
+
+          data.runs.slice(0, 50).forEach((r) => {
+            const tr = document.createElement("tr");
+            const statusBadge = `<span class="badge ${r.status === 'failed' ? 'danger' : r.status === 'success' ? 'success' : 'info'}">${r.status}</span>`;
+            const aiButton = r.status === "failed" ? `<button onclick="recommendFromRun('${r.id}')" class="secondary">AI plan</button>` : "";
+
+            tr.innerHTML = `
+              <td>${statusBadge}</td>
+              <td><code>${r.repo}</code></td>
+              <td><code>${r.branch}</code></td>
+              <td>${r.actor}</td>
+              <td>${new Date(r.startedAt).toLocaleString()}</td>
+              <td>${aiButton}</td>
+            `;
+            rows.appendChild(tr);
+          });
+          console.log("Rendered", data.runs.length, "runs");
+        } catch (error) {
+          console.error("Error loading runs:", error);
+          showStatus("Error loading runs: " + error.message);
+        }
+      }
+
+      // Load and display board items
+      async function loadItems() {
+        const query = new URLSearchParams();
+        const repo = document.getElementById("itemRepoFilter").value;
+        const assigneeId = document.getElementById("itemAssigneeFilter").value;
+        const status = document.getElementById("itemStatusFilter").value;
+        const severity = document.getElementById("itemSeverityFilter").value;
+        if (repo) query.set("repo", repo);
+        if (assigneeId) query.set("assigneeId", assigneeId);
+        if (status) query.set("status", status);
+        if (severity) query.set("severity", severity);
+
+        console.log("Loading items with filters:", { repo, assigneeId, status, severity });
+
+        try {
+          const url = "/api/board/items?" + query.toString();
+          console.log("Fetching from:", url);
+          const res = await fetch(url);
+          const data = await res.json();
+          console.log("Got items:", data);
+          const rows = document.getElementById("itemRows");
+          rows.innerHTML = "";
+
+          if (!data.items || !data.items.length) {
+            document.getElementById("itemsEmpty").style.display = "block";
+            console.log("No items found");
+            return;
+          }
+          document.getElementById("itemsEmpty").style.display = "none";
+
+          data.items.forEach((item) => {
+            const tr = document.createElement("tr");
+            const statusBadge = `<span class="badge info">${item.status}</span>`;
+            const severityBadge = `<span class="badge ${item.severity === 'high' ? 'danger' : item.severity === 'medium' ? 'warning' : 'success'}">${item.severity}</span>`;
+            const runButton = item.links && item.links.runId
+              ? `<button onclick="recommendFromRun('${item.links.runId}')" class="secondary">AI plan</button>`
+              : "";
+
+            tr.innerHTML = `
+              <td><strong>${item.title}</strong></td>
+              <td>${statusBadge}</td>
+              <td>${severityBadge}</td>
+              <td>${item.assigneeId || '—'}</td>
+              <td>${runButton} <button onclick="deleteItem('${item.id}')" class="danger">Delete</button></td>
+            `;
+            rows.appendChild(tr);
+          });
+          console.log("Rendered", data.items.length, "items");
+        } catch (error) {
+          console.error("Error loading items:", error);
+          showStatus("Error loading items: " + error.message);
+        }
+      }
+
+      // Update stats
+      async function updateStats(runs) {
+        if (!runs) {
+          const res = await fetch("/api/pipelines/runs");
+          const data = await res.json();
+          runs = data.runs || [];
+        }
+
+        const total = runs.length;
+        const failed = runs.filter(r => r.status === 'failed').length;
+        const successRate = total > 0 ? Math.round((total - failed) / total * 100) : 0;
+
+        document.getElementById("statTotalRuns").textContent = total;
+        document.getElementById("statFailedRuns").textContent = failed;
+        document.getElementById("statSuccessRate").textContent = successRate + "%";
+
+        // Get items count
+        const itemsRes = await fetch("/api/board/items");
+        const itemsData = await itemsRes.json();
+        const openItems = (itemsData.items || []).filter(i => i.status !== 'done').length;
+        document.getElementById("statOpenItems").textContent = openItems;
+      }
+
+
+      // Event listeners
+      document.getElementById("refresh").onclick = async () => {
+        try {
+          await fetch("/api/pipelines/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ provider: "mock", limit: 20 }),
+          });
+          showStatus("✅ Mock runs generated");
+          await loadRuns();
+          await loadItems();
+        } catch (error) {
+          showStatus("Error: " + error.message);
+        }
+      };
+
+      document.getElementById("refreshLive").onclick = async () => {
+        const repo = document.getElementById("repoInput").value;
+        try {
+          const res = await fetch("/api/pipelines/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ provider: "github-actions", repo, limit: 20 }),
+          });
+          const data = await res.json();
+          showStatus(`✅ Fetched ${data.count} live runs from ${repo}`);
+          await loadRuns();
+          await loadItems();
+        } catch (error) {
+          showStatus("Error: " + error.message);
+        }
+      };
+
+      document.getElementById("load").onclick = loadRuns;
+      document.getElementById("loadItems").onclick = loadItems;
+      document.getElementById("deleteMockItems").onclick = () => bulkDelete("mock");
+      document.getElementById("deleteCompletedItems").onclick = () => bulkDelete("completed");
+
+      document.getElementById("schedulerStatus").onclick = async () => {
+        try {
+          const res = await fetch("/api/pipelines/scheduler/status");
+          const data = await res.json();
+          document.getElementById("schedulerOutput").textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          document.getElementById("schedulerOutput").textContent = "Error: " + error.message;
+        }
+      };
+
+      document.getElementById("pollActive").onclick = async () => {
+        try {
+          const res = await fetch("/api/pipelines/scheduler/poll", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: "active" }),
+          });
+          const data = await res.json();
+          document.getElementById("schedulerOutput").textContent = JSON.stringify(data, null, 2);
+          await loadRuns();
+          await loadItems();
+        } catch (error) {
+          document.getElementById("schedulerOutput").textContent = "Error: " + error.message;
+        }
+      };
+
+      document.getElementById("pollLow").onclick = async () => {
+        try {
+          const res = await fetch("/api/pipelines/scheduler/poll", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: "low" }),
+          });
+          const data = await res.json();
+          document.getElementById("schedulerOutput").textContent = JSON.stringify(data, null, 2);
+          await loadRuns();
+          await loadItems();
+        } catch (error) {
+          document.getElementById("schedulerOutput").textContent = "Error: " + error.message;
+        }
+      };
+
+      document.getElementById("reconcile").onclick = async () => {
+        try {
+          const res = await fetch("/api/pipelines/scheduler/reconcile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          });
+          const data = await res.json();
+          document.getElementById("schedulerOutput").textContent = JSON.stringify(data, null, 2);
+          await loadRuns();
+          await loadItems();
+        } catch (error) {
+          document.getElementById("schedulerOutput").textContent = "Error: " + error.message;
+        }
+      };
+
+      document.getElementById("failedToItem").onclick = async () => {
+        try {
+          const runsRes = await fetch("/api/pipelines/runs?status=failed");
+          const runsData = await runsRes.json();
+          if (!runsData.runs.length) {
+            showStatus("No failed runs found");
+            return;
+          }
+          const itemRes = await fetch("/api/board/items/from-failed-run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ runId: runsData.runs[0].id }),
+          });
+          const itemData = await itemRes.json();
+          showStatus("✅ Created board item: " + JSON.stringify(itemData.item, null, 2));
+          await loadItems();
+        } catch (error) {
+          showStatus("Error: " + error.message);
+        }
+      };
+
+      document.getElementById("recommend").onclick = async () => {
+        const requirementText = document.getElementById("requirement").value || "Fix failing workflow";
+        try {
+          const res = await fetch("/api/ai/recommendations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ requirementText, context: { hasRelatedHistory: true } }),
+          });
+          const data = await res.json();
+          document.getElementById("recommendationOutput").textContent = JSON.stringify(data.recommendation, null, 2);
+        } catch (error) {
+          document.getElementById("recommendationOutput").textContent = "Error: " + error.message;
+        }
+      };
+
+      document.getElementById("pending").onclick = async () => {
+        try {
+          const res = await fetch("/api/ai/recommendations/pending");
+          const data = await res.json();
+          document.getElementById("recommendationOutput").textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          document.getElementById("recommendationOutput").textContent = "Error: " + error.message;
+        }
+      };
+
+      // Filter change events - setup BEFORE initial load
+      let filterTimeout;
+      document.getElementById("provider").addEventListener("change", () => {
+        console.log("Provider filter changed to:", document.getElementById("provider").value);
+        loadRuns();
+      });
+      document.getElementById("statusFilter").addEventListener("change", () => {
+        console.log("Status filter changed to:", document.getElementById("statusFilter").value);
+        loadRuns();
+      });
+      
+      // For text inputs, use debounce to avoid too many requests
+      document.getElementById("itemRepoFilter").addEventListener("input", () => {
+        clearTimeout(filterTimeout);
+        console.log("Repo filter changed to:", document.getElementById("itemRepoFilter").value);
+        filterTimeout = setTimeout(loadItems, 300);
+      });
+      
+      document.getElementById("itemAssigneeFilter").addEventListener("input", () => {
+        clearTimeout(filterTimeout);
+        console.log("Assignee filter changed to:", document.getElementById("itemAssigneeFilter").value);
+        filterTimeout = setTimeout(loadItems, 300);
+      });
+      
+      document.getElementById("itemStatusFilter").addEventListener("change", () => {
+        console.log("Item status filter changed to:", document.getElementById("itemStatusFilter").value);
+        loadItems();
+      });
+      
+      document.getElementById("itemSeverityFilter").addEventListener("change", () => {
+        console.log("Severity filter changed to:", document.getElementById("itemSeverityFilter").value);
+        loadItems();
+      });
+
+      // Initial load with delay to ensure DOM is ready
+      setTimeout(async () => {
+        console.log("Initial load starting...");
+        await loadRuns();
+        await loadItems();
+        await updateStats();
+        console.log("Initial load complete");
+      }, 100);
+    </script>
+  </body>
+</html>

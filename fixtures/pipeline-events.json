@@ -1,0 +1,32 @@
+[
+  {
+    "provider": "mock",
+    "event": {
+      "id": "evt_run_1",
+      "repo": "demo/pipeline-board-hub",
+      "branch": "main",
+      "commitSha": "abc111",
+      "actor": "anna-dev",
+      "status": "success",
+      "durationSec": 155,
+      "startedAt": "2026-05-04T08:00:00.000Z",
+      "finishedAt": "2026-05-04T08:02:35.000Z",
+      "logsUrl": "https://example.local/logs/evt_run_1"
+    }
+  },
+  {
+    "provider": "mock",
+    "event": {
+      "id": "evt_run_2",
+      "repo": "demo/pipeline-board-hub",
+      "branch": "feature/ai",
+      "commitSha": "abc112",
+      "actor": "raj-dev",
+      "status": "failed",
+      "durationSec": 201,
+      "startedAt": "2026-05-04T08:30:00.000Z",
+      "finishedAt": "2026-05-04T08:33:21.000Z",
+      "logsUrl": "https://example.local/logs/evt_run_2"
+    }
+  }
+]
