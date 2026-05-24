@@ -87,17 +87,3 @@ Server runs at `http://localhost:4000`.
 ```bash
 npm test
 ```
-
-## Documentation
-
-Markdown under `docs/` (MVP scope, adapter interfaces, data model, security model, AI policy, setup guide, backlog, checklist, plans) is **not committed** in this fork—clone locally to read beside the source.
-
-## Hosting note
-
-GitHub Pages does not run this Express + SQLite app. Deploy to a Node host (Render, Railway, Fly.io, Azure Web App, etc.), set env from [.env.example](.env.example), run `npm ci` then `npm start`, and expose `PORT`.
-
-## Push this repo (personal account cannotdoit13)
-
-1. On GitHub as **cannotdoit13**, create an **empty** repo named **`pipeline-board-hub`** (no README /.gitignore / license from the wizard).
-2. `git remote add origin https://github.com/cannotdoit13/pipeline-board-hub.git` if needed; then `git push -u origin main`.
-3. Confirm `git remote -v` is **not** Azure DevOps or a company SLB org unless intentional.
